@@ -1,0 +1,25 @@
+name: make installcheck
+on: [push, pull_request]
+jobs:
+  test:
+    strategy:
+      matrix:
+        pg: [17, 16, 15, 14]
+    name: PostgreSQL ${{ matrix.pg }}
+    runs-on: ubuntu-latest
+    container: pgxn/pgxn-tools
+    steps:
+
+      - name: Start PostgreSQL ${{ matrix.pg }}
+        run: pg-start ${{ matrix.pg }}
+
+      - name: Check out the repo
+        uses: actions/checkout@v2
+
+      - name: Install required packages
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y libsodium-dev
+
+      - name: Test on PostgreSQL ${{ matrix.pg }}
+        run: pg-build-test

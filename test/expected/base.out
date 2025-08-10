@@ -1,0 +1,40 @@
+\set ECHO none
+-- generate new keypair
+SELECT * FROM jwt_generate_keys('ES256') \gset
+-- generate new secret
+SELECT * FROM jwt_generate_secret('HS256') \gset
+-- incorrect combinations
+SELECT * FROM jwt_generate_keys('HS256') \gset
+ERROR:  algorithm 'HS256' does not support 'genkey'
+SELECT * FROM jwt_generate_secret('ES256') \gset
+ERROR:  algorithm 'ES256' does not support 'gensecret'
+SELECT jwt_sign(NULL, NULL, NULL, NULL);
+ jwt_sign 
+----------
+ 
+(1 row)
+
+SELECT jwt_verify(NULL, NULL);
+ jwt_verify 
+------------
+ 
+(1 row)
+
+SELECT jwt();
+ jwt 
+-----
+ 
+(1 row)
+
+SELECT jwt('id');
+ jwt 
+-----
+ 
+(1 row)
+
+SELECT jwt(NULL);
+ jwt 
+-----
+ 
+(1 row)
+

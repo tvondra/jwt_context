@@ -1,0 +1,82 @@
+-- discard keys possibly left from previous test run, reconnect
+ALTER DATABASE :DBNAME RESET ALL;
+\connect
+-- generate new keypair
+SELECT * FROM jwt_generate_keys('ES256') \gset
+-- generate an invalid signed context, with incorrect header (algorithm mismatch)
+SELECT jwt_sign('ES256', :'private_raw', '{"alg": "HS256"}', '{"id": 123456, "exp": 123456789}') AS context \gset
+-- the header says HS256, so the key is used as symmetric key
+SELECT jwt_verify(:'public_raw', :'context');
+ jwt_verify 
+------------
+ f
+(1 row)
+
+-- generate a valid signed context
+SELECT jwt_sign('ES256', :'private_raw', '{"alg": "ES256"}', '{"id": 123456, "exp": 123456789}') AS context \gset
+-- can't verify using the private key
+SELECT jwt_verify(:'private_raw', :'context');
+ERROR:  failed to read key
+-- verify the signature
+SELECT jwt_verify(:'public_raw', :'context');
+ jwt_verify 
+------------
+ t
+(1 row)
+
+-- try to set it without the public key installed
+SET jwt.context = :'context';
+ERROR:  no key defined
+-- set the key for the database, reconnect
+ALTER DATABASE :DBNAME SET jwt.pubkey = :'public_raw';
+\connect
+-- verify the context (function call forces loading the library, which
+-- is what sets the check/assign hooks we need)
+SELECT jwt_verify(NULL, :'context');
+ jwt_verify 
+------------
+ t
+(1 row)
+
+-- some bogus contexts first
+SET jwt.context = 'blahblah';
+ERROR:  failed to parse JWT token header (separator not found)
+SET jwt.context = 'foo:bar';
+ERROR:  failed to parse JWT token header (separator not found)
+SET jwt.context = 'foo:bar:baz';
+ERROR:  failed to parse JWT token header (separator not found)
+SHOW jwt.context;
+ jwt.context 
+-------------
+ (not set)
+(1 row)
+
+-- now the correctly signed context
+SET jwt.context = :'context';
+SHOW jwt.context;
+           jwt.context            
+----------------------------------
+ {"id": 123456, "exp": 123456789}
+(1 row)
+
+-- whole context
+SELECT jwt();
+               jwt                
+----------------------------------
+ {"id": 123456, "exp": 123456789}
+(1 row)
+
+-- existing key
+SELECT jwt('id');
+  jwt   
+--------
+ 123456
+(1 row)
+
+-- missing key
+SELECT jwt('xid');
+ jwt 
+-----
+ 
+(1 row)
+

@@ -1,0 +1,35 @@
+{
+   "name": "jwt_context",
+   "abstract": "Environment storing values (e.g. for RLS) protected by PKI signatures.",
+   "description": "Allows establishing trusted environment by defining context signed by PKI (e.g. for RLS)",
+   "version": "1.0.0",
+   "maintainer": "Tomas Vondra <tomas@vondra.me>",
+   "license": "bsd",
+   "prereqs": {
+      "runtime": {
+         "requires": {
+            "PostgreSQL": "13.0"
+         }
+      }
+   },
+   "provides": {
+     "jwt_context": {
+       "file": "sql/jwt_context--1.0.0.sql",
+       "docfile" : "README.md",
+       "version": "1.0.0"
+     }
+   },
+   "resources": {
+      "repository": {
+        "url":  "https://github.com/tvondra/jwt_context.git",
+        "web":  "http://github.com/tvondra/jwt_context",
+        "type": "git"
+      }
+   },
+   "tags" : ["pki", "context", "rls", "GUC"],
+   "meta-spec": {
+      "version": "1.0.0",
+      "url": "http://pgxn.org/meta/spec.txt"
+   },
+   "release_status" : "unstable"
+}

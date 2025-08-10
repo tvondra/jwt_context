@@ -1,0 +1,17 @@
+-- two random public keys used in this test;
+-- MFkwEwYHKoZIzj0CAQYIKoZIzj0DAQcDQgAEpVqXkp1_NCTXgjdqrPkHEny9jfiaLNnkFFY0JAt6oKMs-WwTJYQO8TVJvKRoI0OLSg91e1VwSqf_3u78JI8pVA
+-- MFkwEwYHKoZIzj0CAQYIKoZIzj0DAQcDQgAEyrVC5f281qdqfEFVoOX1CLmTQ8wFGE6i43U6uVgmbqd-rTtMoJmwWA5hxaJgqlsxxTn_TBj8KTFcOWocvDl_Lg
+
+-- make sure the extension is loaded/initialized, including GUC hooks
+LOAD 'jwt_context';
+
+SET jwt.pubkey = 'MFkwEwYHKoZIzj0CAQYIKoZIzj0DAQcDQgAEpVqXkp1_NCTXgjdqrPkHEny9jfiaLNnkFFY0JAt6oKMs-WwTJYQO8TVJvKRoI0OLSg91e1VwSqf_3u78JI8pVA';
+
+SHOW jwt.pubkey;
+
+BEGIN;
+SET LOCAL jwt.pubkey = 'MFkwEwYHKoZIzj0CAQYIKoZIzj0DAQcDQgAEyrVC5f281qdqfEFVoOX1CLmTQ8wFGE6i43U6uVgmbqd-rTtMoJmwWA5hxaJgqlsxxTn_TBj8KTFcOWocvDl_Lg';
+SHOW jwt.pubkey;
+COMMIT;
+
+SHOW jwt.pubkey;

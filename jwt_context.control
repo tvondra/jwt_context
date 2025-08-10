@@ -1,0 +1,4 @@
+# JWT context
+comment = 'Provides implementation of signed JWT context.'
+default_version = '1.0.0'
+relocatable = true
